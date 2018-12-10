@@ -19,6 +19,7 @@ function User() {
     this.exp = 0;
     this.addExp = 10;
     this.socket = undefined;
+    this.sign = 0;
 }
 
 User.prototype.getMK = function () {

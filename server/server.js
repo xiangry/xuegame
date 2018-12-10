@@ -6,12 +6,11 @@ User = require("./object/user")
 
 const XSchedule = require('node-schedule');
 
-
 var express = require('express')
 var path = require('path')
 var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var IOServer = require('socket.io')(http);
 
 
 app.use(express.static(path.join(__dirname, "")))
@@ -27,29 +26,34 @@ app.get('/', function(req, res){
 });
 
 
+let allSockets = []
 
 var online_user = {}
-var socket_user = {}
+var allUsers = []
 
-
-
-io.on('connection', function(socket){
+IOServer.on('connection', function(socket){
     console.log('one user connected');
 
-    var user = new User()
+    let user = new User()
     user.Login("xiangry", "123456")
     if(user.isLogin()){
         user.SetSocket(socket)
+        allSockets.push(socket)
+        allUsers.push(user)
         online_user[socket] = user
 
         socket.on('disconnect', function(){
             console.log('user disconnected');
-            delete online_user[socket]
+            let index = allSockets.indexOf(socket)
+            if (n!=-1){
+                allSockets.splice(index, 1)
+                delete online_user[socket];
+            }
         });
+
         socket.on('cs_message', function(msg){
             console.log('message: ' + msg);
         });
-
     }
     console.log(user.getMK())
 });
@@ -61,11 +65,12 @@ http.listen(10101, function(){
 });
 
 XSchedule.scheduleJob('* * * * * *', function (data) {
-    var user = undefined
-    for (var key in online_user){
-        user = online_user[key]
+    console.log("-----------------------------------------------------")
+    for (var index in allUsers){
+        let user = allUsers[index];
+        console.log(user.getMK())
         user.Step()
         user.GetSocket().emit("sc_message", user.GetExp());
     }
-    // console.log(Object.keys(online_user))
 })
+
