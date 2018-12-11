@@ -32,7 +32,6 @@ User.prototype.Login = function (name, password) {
         this.time = new Date().getTime();
         var str = this.name + this.time + mk_salt + Math.random();
         this.mk = str
-            // md5.update(str).digest("hex");
         return true
     }
 }

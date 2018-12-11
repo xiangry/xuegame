@@ -16,7 +16,6 @@ var XEneum = require("../enum")
  * @constructor
  */
 GetUser = function (name) {
-    console.log("xxxx")
     for (var _name in user_data){
         if (_name == name){
             return user_data[name]

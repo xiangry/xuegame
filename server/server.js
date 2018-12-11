@@ -25,11 +25,16 @@ app.get('/', function(req, res){
     res.sendFile(__dirname + '/../index.html');
 });
 
-
-let allSockets = []
-
-var online_user = {}
 var allUsers = []
+
+function GetUser(socket){
+    allUsers.forEach(function (user, index) {
+        // user = allUsers.forEach()
+        if(user.GetSocket() == socket){
+            return index
+        }
+    })
+}
 
 IOServer.on('connection', function(socket){
     console.log('one user connected');
@@ -38,16 +43,15 @@ IOServer.on('connection', function(socket){
     user.Login("xiangry", "123456")
     if(user.isLogin()){
         user.SetSocket(socket)
-        allSockets.push(socket)
         allUsers.push(user)
-        online_user[socket] = user
+
+        socket.emit("s2c_msg", "xxxxx")
 
         socket.on('disconnect', function(){
             console.log('user disconnected');
-            let index = allSockets.indexOf(socket)
-            if (n!=-1){
-                allSockets.splice(index, 1)
-                delete online_user[socket];
+            let index = GetUser(socket)
+            if (index!=-1){
+                allUsers.splice(index, 1)
             }
         });
 
@@ -55,7 +59,6 @@ IOServer.on('connection', function(socket){
             console.log('message: ' + msg);
         });
     }
-    console.log(user.getMK())
 });
 
 
@@ -65,12 +68,11 @@ http.listen(10101, function(){
 });
 
 XSchedule.scheduleJob('* * * * * *', function (data) {
-    console.log("-----------------------------------------------------")
+    console.log("-----------------------------------------------------" + allUsers.length)
     for (var index in allUsers){
         let user = allUsers[index];
-        console.log(user.getMK())
         user.Step()
-        user.GetSocket().emit("sc_message", user.GetExp());
+        user.GetSocket().emit("s2c_msg", user.GetExp());
     }
 })
 

@@ -13,7 +13,7 @@ var socket = io();
 var exp = $("#exp")
 var expValue = exp.innerText;
 
-socket.on("sc_message", function (msg) {
+socket.on("s2c_msg", function (msg) {
     console.log("get message " + msg);
     $("#exp").text(msg)
 })
