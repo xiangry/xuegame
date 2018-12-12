@@ -2,6 +2,8 @@ XConfig = require("./config/config")
 XEnum = require("./enum")
 XLog = require("./util/log")
 
+require("./global")
+
 User = require("./object/user")
 
 const XSchedule = require('node-schedule');
@@ -68,7 +70,7 @@ http.listen(10101, function(){
 });
 
 XSchedule.scheduleJob('* * * * * *', function (data) {
-    console.log("-----------------------------------------------------" + allUsers.length)
+    // console.log("-----------------------------------------------------" + allUsers.length)
     for (var index in allUsers){
         let user = allUsers[index];
         user.Step()
