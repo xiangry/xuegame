@@ -4,7 +4,7 @@ XLog = require("./util/log")
 
 require("./global")
 
-User = require("./object/user")
+User = require("./data/user")
 
 const XSchedule = require('node-schedule');
 
@@ -63,8 +63,6 @@ IOServer.on('connection', function(socket){
     }
 });
 
-
-
 http.listen(10101, function(){
     console.log('listening on *:10101');
 });
@@ -78,3 +76,12 @@ XSchedule.scheduleJob('* * * * * *', function (data) {
     }
 })
 
+
+
+var UserModel = require("./models/user")
+UserModel.findOrCreate({id:"dada1331", displayName:"wuming"}, function (err, user) {
+    console.log("find or create", "err:", err)
+    console.log("find or create", "user:", user)
+
+    console.log("username === ", user.username)
+})
