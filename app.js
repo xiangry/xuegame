@@ -1,41 +1,53 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
+var express = require('express')
+var path = require('path')
 var app = express();
+var server = require('http').Server(app);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.use(express.static(path.join(__dirname, "")))
+app.use(express.static(path.join(__dirname, "../")))
+app.use(express.static(path.join(__dirname, "../client")))
+app.use(express.static(path.join(__dirname, "../client/js")))
+app.use(express.static(path.join(__dirname, "../client/css/")))
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.get('/', function(req, res){
+    console.log("url", req.url)
+    res.sendFile(__dirname + '/client/index.html');
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+app.get('/*', function (req, res) {
+    console.log("url client", __dirname + req.url)
+    res.sendFile(__dirname + req.url);
+})
+
+const XuebaGamePort = 10101
+
+World = require("./app/game/world")
+
+var io = require('socket.io')(server);
+World.setup(io, function () {
+
+    io.on('connection', function (socket) {
+
+        Glog("XueBa::", "one user connect ");
+        
+        World.playerConnect(socket);
+
+        socket.on('c2scmd', function (msg) {
+            World.reciveData(socket, msg);
+        });
+
+        socket.on('disconnect', function () {
+            World.playerQuit(socket, function () {
+                socket.leave("game");
+                socket.disconnect();
+            })
+        });
+    });
+
+    server.listen(XuebaGamePort, function(){
+        Glog('listening on *:', XuebaGamePort);
+    });
 });
-
-module.exports = app;

@@ -1,15 +1,22 @@
 const redis = require("redis")
 
+const EErrorMsg = {
+    NotFound: "not found",
+}
+
+const XuebaRdsHost = '127.0.0.1'
+const XuebaRdsPort = 6379
+const XuebaRdsOPTS = {}
+
 const DataControl = function(){
 
 }
 
-DataControl.prototype.init = function() {
-
-    this.client = redis.createClient(6379, "localhost")
-    this.client.set('hello', JSON.stringify({a:1, b:2}))
-    this.client.get('hello', function (err, value) {
-        console.log("redis value ", value)
+DataControl.prototype.init = function(fn) {
+    this.client = redis.createClient(XuebaRdsPort, XuebaRdsHost, XuebaRdsOPTS)
+    this.client.on('ready', function () {
+        Glog("XueBa::", "redis ready");
+        fn();
     })
 }
 
@@ -20,7 +27,6 @@ DataControl.prototype.getDataByKey = function(key, callback) {
         }else {
             return callback(err, value);
         }
-        console.log("getDataByKey key =====  ", value.a)
     })
 }
 

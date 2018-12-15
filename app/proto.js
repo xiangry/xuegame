@@ -1,0 +1,3 @@
+EMsgProto = {
+    Login: 1,
+}

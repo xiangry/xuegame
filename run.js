@@ -5,15 +5,15 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.use(express.static(path.join(__dirname, "")))
-app.use(express.static(path.join(__dirname, "app")))
-app.use(express.static(path.join(__dirname, "app/js")))
-app.use(express.static(path.join(__dirname, "app/css/")))
+app.use(express.static(path.join(__dirname, "client")))
+app.use(express.static(path.join(__dirname, "client/js")))
+app.use(express.static(path.join(__dirname, "client/css/")))
 
 console.log("__dirname" + __dirname)
 
 // app.get('/', function(req, res){
 //     console.log(req.body)
-//     res.sendFile(__dirname + '/index.html');
+//     res.sendFile(__dirname + '/index1.html');
 // });
 
 
