@@ -1,4 +1,4 @@
-require("proto")
+require("./proto")
 
 var __stringify = JSON.stringify
 

@@ -7,6 +7,7 @@ require("../message");
 const DataControl = require("../data/data_control")
 const SocketModel = require("../models/user")
 const PlayerModel = require("./player")
+const Cmd = require("../modules/cmd")
 
 var XBWorld = function(){
 
@@ -61,6 +62,9 @@ XBWorld.prototype.playerConnect = function(socket){
 
 XBWorld.prototype.reciveData = function(socket, msg){
     Glog("XueBa::", "get client msg ", msg);
+
+    var cmdObj = Cmd.createCmdObject(msg)
+    cmdObj.excute();
 }
 
 XBWorld.prototype.playerQuit = function(socket){
