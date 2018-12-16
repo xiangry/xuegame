@@ -7,11 +7,11 @@ var __praseMsg = JSON.parse;
 
 class Cmd {
     constructor(data){
-
+        this.data = data;
     }
 
-    excute(){
-        this["c2s_" + this.data.p]();
+    excute(socket){
+        this["c2s_" + this.data.p](socket);
     }
 
     static createCmdObject(msg){
@@ -21,8 +21,16 @@ class Cmd {
     }
 }
 
-Cmd.prototype['c2s_' + EMsgProto.Login] = function () {
+Cmd.prototype['c2s_' + EMsgProto.Login] = function (socket) {
     console.log("-------------------", this.data);
+    var player = socket.player;
+    player.loginWithData(this.data, function (user) {
+        player.doLoginSuccess(socket, function () {
+            player.doFirstData(socket, function () {
+
+            })
+        })
+    })
 }
 
 module.exports = Cmd

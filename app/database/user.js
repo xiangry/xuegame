@@ -8,16 +8,25 @@ const DEFAULT_USER_PICTURE = "1";
 const ExpModel = require("./exp")
 const SocketModel = require("./socket")
 
+var __hash_passwrd = function (password, func) {
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) return func(err);
+
+        bcrypt.hash(password, salt, null, function(err, hash) {
+            if (err) return func(err);
+            func(hash);
+        });
+    });
+}
+
 class LocalUser {
     constructor(data) {
         this.username = data.username ||"undifien";
-        this.password = "123456";
+        this.password = data.password || "123456";
         this.socialId = data.socialId || "undefine";
-        this.picture = DEFAULT_USER_PICTURE;
-        this.displayName = "未命名";
-
+        this.picture = data.picture || DEFAULT_USER_PICTURE;
+        this.displayName = data.picture || "未命名";
         this.components = {}
-        this.socket = nil
     }
 
     setUsername(username){this.username = username;};
@@ -83,14 +92,27 @@ class LocalUser {
     }
 
     static findOne(data, callback){
-        return LocalUser.findById(data.username, callback)
+        return LocalUser.findById(data.username, function (err, user) {
+            if (err){ return callback(err);};
+            if (user){
+                __hash_passwrd(data.password, function (password) {
+                    user.validatePassword(password, function () {
+                        //TODO 默认成功
+                        callback(null, user);
+                    })
+                })
+
+            }
+        })
     }
 
     static findById (username, callback){
+        Glog("findByIdfindById ==============", username);
         G.DataControl.getDataByKey(username, function (err, value) {
             if(err){return callback(err);}
             if(value){
                 var data = JSON.parse(value)
+                Glog("findByIdfindById data  ==============", data);
                 var user = new LocalUser(data)
                 return callback(err, user);
             }else
@@ -107,8 +129,12 @@ class LocalUser {
         })
     }
 
-    static validatePassword(password, callback) {
+    validatePassword(password, callback) {
+        Glog("XueBa:: will  this.password", this.password);
+        Glog("XueBa:: will  password", password);
         bcrypt.compare(password, this.password, function(err, isMatch) {
+            Glog("XueBa:: will validatePassword err", err);
+            Glog("XueBa:: will validatePassword isMatch", isMatch);
             if (err) return callback(err);
             callback(null, isMatch);
         });

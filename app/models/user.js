@@ -7,6 +7,7 @@ var create = function (data, callback){
 };
 
 var findOne = function (data, callback){
+    Glog("function ==============", data);
     userModel.findOne(data, callback);
 }
 

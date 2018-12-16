@@ -64,7 +64,7 @@ XBWorld.prototype.reciveData = function(socket, msg){
     Glog("XueBa::", "get client msg ", msg);
 
     var cmdObj = Cmd.createCmdObject(msg)
-    cmdObj.excute();
+    cmdObj.excute(socket);
 }
 
 XBWorld.prototype.playerQuit = function(socket){
